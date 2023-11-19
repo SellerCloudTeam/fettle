@@ -1,9 +1,19 @@
 import type { NextPage } from 'next'
+import { useState } from 'react'
+import { useInterval } from 'usehooks-ts'
 import Image from 'next/image'
 import IncidentsSection from "../src/incidents"
 import ServicesSection from "../src/services"
+import { REFRESH_INTERVAL_MILLISECONDS } from '../src/utils/constants'
 
 const Home: NextPage = () => {
+  const [refresh, setRefresh] = useState<number>(0)
+
+  useInterval(
+    () => setRefresh(refresh + 1),
+    REFRESH_INTERVAL_MILLISECONDS
+  );
+
   return (
     <div className='h-full w-full '>
       <div className="mt-20 absolute inset-0 bg-[url(/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
@@ -13,7 +23,7 @@ const Home: NextPage = () => {
         </div>
       </div>
       <div className='mt-20 w-full absolute overflow-scroll	'>
-        <ServicesSection />
+        <ServicesSection key={refresh} />
       </div >
     </div>
   )

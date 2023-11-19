@@ -1,6 +1,8 @@
 export const DAYS_BACK = 90;
 
-export const VPN_CHECK_MILLISECONDS = 3000;
+export const REFRESH_INTERVAL_MILLISECONDS = 60 * 1000; // 60 sec
+
+export const VPN_CHECK_MILLISECONDS = 3 * 1000; // 3 sec
 
 export const GITHUB_ORG_REPO = "SellerCloudTeam/fettle";
 
