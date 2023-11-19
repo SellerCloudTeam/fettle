@@ -10,7 +10,7 @@ const useVpnCheck = (url: string, timeout: number = VPN_CHECK_MILLISECONDS) => {
     checkVpnStatus(url, timeout)
       .then(() => setVpn(true))
       .catch((e) => setError(e));
-  }, []);
+  }, [url, timeout]);
 
   return { vpn, error };
 };

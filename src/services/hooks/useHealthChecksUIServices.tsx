@@ -25,7 +25,7 @@ function useHealthChecksUIServices(apiUrl: string) {
                 const response = await fetch(apiUrl);
 
                 if (!response.ok) {
-                    const statusTextBasedOnCode = {
+                    const statusTextBasedOnCode : {[x: number]: string} = {
                         401: "Unauthorized",
                         403: "Forbidden",
                         404: "Not Found",
@@ -73,7 +73,7 @@ function useHealthChecksUIServices(apiUrl: string) {
             }
         };
         loadData();
-    }, []);
+    }, [apiUrl]);
 
     return { services, isLoading, error };
 }
