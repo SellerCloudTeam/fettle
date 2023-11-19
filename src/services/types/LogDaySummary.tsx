@@ -1,8 +1,9 @@
+import { Statuses } from "../../utils/constants";
+
 interface LogDaySummary {
     avg_response_time: number;
-    current_status: string;
     date: string;
-    status: string;
+    status: Statuses;
 }
 
 export default LogDaySummary;

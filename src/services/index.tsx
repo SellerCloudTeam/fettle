@@ -1,18 +1,17 @@
-import useServices from './hooks/useServices';
+import useHealthChecksUIServices from './hooks/useHealthChecksUIServices';
 import type { NextPage } from 'next'
-import Service from './types/Service';
 import ServiceItem from './components/service';
-// import IncidentsSection from '../incidents';
 import useSystemStatus from './hooks/useSystemStatus';
-import { Status } from '../utils/constants';
+import { Status, URL_HEALTHCHECKS_UI_API } from '../utils/constants';
 
 const Nbsp = () => {
     return <>&nbsp;</>
 }
 
 const ServicesSection: NextPage = () => {
-    const [data, isServicesLoading] = useServices();
-    const {systemStatus, isLoading} = useSystemStatus();
+    // TODO: Error handling
+    const { services, isLoading: isServicesLoading, error } = useHealthChecksUIServices(URL_HEALTHCHECKS_UI_API);
+    const {systemStatus, isLoading} = useSystemStatus(services);
 
     const Icon = () => {
         if (systemStatus?.status === Status.OPERATIONAL) {
@@ -36,29 +35,29 @@ const ServicesSection: NextPage = () => {
     }
 
     return (
-        <div className='mt-10'>
-            <div className="mx-px max-w-lg bg-white dark:bg-slate-800 rounded-xl card">
-                <div className="w-full flex justify-between pt-2 pl-6 pr-6 pb-2">
+        <div className='mt-2 px-2'>
+            <div className="mx-auto max-w-lg bg-white dark:bg-slate-800 rounded-xl card">
+                <div className="w-full flex justify-between items-center pt-2 px-6 pb-2">
                     <div className='flex items-center text-xl font-semibold leading-7'>
                         <Icon />
-                        <p className={["ml-3", systemStatus ? "text-gray-900" : "text-gray-400"].join(" ")}>{systemStatus?.title ?? "Loading..."}</p>                        
+                        <p className={["ml-2", systemStatus ? "text-gray-900" : "text-gray-400"].join(" ")}>{systemStatus?.title ?? "Loading..."}</p>                        
                     </div>
                     <div>
-                        <p className="text-xs text-gray-400">{systemStatus ? "Last updated" : <Nbsp />}</p>
-                        <p className="text-xs text-gray-400 text-end ">{systemStatus?.datetime ?? <Nbsp />}</p>
+                        <p className="text-right text-xs text-gray-400 whitespace-nowrap">{systemStatus ? "Last updated" : <Nbsp />}</p>
+                        <p className="text-right text-xs text-gray-400 text-end whitespace-nowrap">{systemStatus?.datetime ?? <Nbsp />}</p>
                     </div>
                 </div>
             </div>
-            <div className="mx-px mt-10 lg:ml-40 lg:mr-40 ml-10 mr-10 mb-10">
+            <div className="mx-px my-10 md:mx-10 lg:mx-40 xl:mx-80 2xl:mx-96">
                 <div className="card-body">
                     {
-                        isServicesLoading ? (
+                        isServicesLoading || !services ? (
                             // <p>Loading...</p>
                             <></>
                         ) : (
                             <ul>
                                 {
-                                    (data as Service[]).map(service => (
+                                    services.map(service => (
                                         <ServiceItem key={service.id} item={service} />
                                     ))
                                 }
