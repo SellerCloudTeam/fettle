@@ -2,18 +2,22 @@ import useHealthChecksUIServices from './hooks/useHealthChecksUIServices';
 import type { NextPage } from 'next'
 import ServiceItem from './components/service';
 import useSystemStatus from './hooks/useSystemStatus';
-import { Status, URL_HEALTHCHECKS_UI_API } from '../utils/constants';
+import useVpnCheck from './hooks/useVpnCheck';
+import { Status, URL_HEALTHCHECKS_UI_API, URL_VPN_CHECK } from '../utils/constants';
 
 const Nbsp = () => {
     return <>&nbsp;</>
 }
 
 const ServicesSection: NextPage = () => {
-    // TODO: Error handling
-    const { services, isLoading: isServicesLoading, error: servicesError } = useHealthChecksUIServices(URL_HEALTHCHECKS_UI_API);
+    const vpnCheckUrl = URL_VPN_CHECK;
+    const healthApiUrl = URL_HEALTHCHECKS_UI_API;
+
+    const { vpn, error: vpnError } = useVpnCheck(vpnCheckUrl);
+    const { services, isLoading: isServicesLoading, error: servicesError } = useHealthChecksUIServices(healthApiUrl);
     const { systemStatus, isLoading, error: systemSatusError } = useSystemStatus(services);
 
-    const error = servicesError ?? systemSatusError;
+    const error = vpnError ?? servicesError ?? systemSatusError;
 
     const Icon = () => {
         if (systemStatus?.status === Status.OPERATIONAL) {
