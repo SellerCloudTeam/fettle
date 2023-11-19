@@ -7,7 +7,7 @@ import SystemStatus from "../types/SystemStatus";
 function useSystemStatus(services: Service[] | null) {
     const [systemStatus, setSystemStatus] = useState<SystemStatus>();
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState();
+    const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
         if (services === null) {
@@ -54,11 +54,15 @@ function useSystemStatus(services: Service[] | null) {
                 });
             }
         } catch (e: any) {
-            setError(e);
+            if (e instanceof Error) {
+                setError(e);
+            } else {
+                setError(new Error(e?.message ?? "Unknown error"));
+            }
         } finally {
             setIsLoading(false);
         }
-    }, [services]);
+    }, [services, error]);
 
     return {systemStatus, isLoading, error};
 }

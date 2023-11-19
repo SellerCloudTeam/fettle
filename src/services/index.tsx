@@ -10,8 +10,10 @@ const Nbsp = () => {
 
 const ServicesSection: NextPage = () => {
     // TODO: Error handling
-    const { services, isLoading: isServicesLoading, error } = useHealthChecksUIServices(URL_HEALTHCHECKS_UI_API);
-    const {systemStatus, isLoading} = useSystemStatus(services);
+    const { services, isLoading: isServicesLoading, error: servicesError } = useHealthChecksUIServices(URL_HEALTHCHECKS_UI_API);
+    const { systemStatus, isLoading, error: systemSatusError } = useSystemStatus(services);
+
+    const error = servicesError ?? systemSatusError;
 
     const Icon = () => {
         if (systemStatus?.status === Status.OPERATIONAL) {
@@ -40,7 +42,9 @@ const ServicesSection: NextPage = () => {
                 <div className="w-full flex justify-between items-center pt-2 px-6 pb-2">
                     <div className='flex items-center text-xl font-semibold leading-7'>
                         <Icon />
-                        <p className={["ml-2", systemStatus ? "text-gray-900" : "text-gray-400"].join(" ")}>{systemStatus?.title ?? "Loading..."}</p>                        
+                        <p className={["ml-2", systemStatus ? "text-gray-900" : "text-gray-400"].join(" ")}>
+                            {error?.message ?? systemStatus?.title ?? "Loading..."}
+                        </p>                        
                     </div>
                     <div>
                         <p className="text-right text-xs text-gray-400 whitespace-nowrap">{systemStatus ? "Last updated" : <Nbsp />}</p>

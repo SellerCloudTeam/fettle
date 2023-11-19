@@ -16,13 +16,30 @@ type LogsPerDay = { [key: string]: LogSummary };
 function useHealthChecksUIServices(apiUrl: string) {
     const [services, setServices] = useState<Service[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState();
+    const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
         const loadData = async () => {
             setIsLoading(true);
             try {
                 const response = await fetch(apiUrl);
+
+                if (!response.ok) {
+                    const statusTextBasedOnCode = {
+                        401: "Unauthorized",
+                        403: "Forbidden",
+                        404: "Not Found",
+                        500: "Internal Server Error",
+                        502: "Bad Gateway",
+                        503: "Service Unavailable",
+                        504: "Gateway Timeout"
+                    };
+
+                    const message = statusTextBasedOnCode[response.status] ?? response.status;
+
+                    throw new Error(`Error (${message})`);
+                }
+
                 const raw = await response.json() as HealthChecksUILiveness[];
 
                 const sorted = sortByProp(raw, "name");
@@ -46,7 +63,11 @@ function useHealthChecksUIServices(apiUrl: string) {
                 }
                 setServices(services);
             } catch (e: any) {
-                setError(e);
+                if (e instanceof Error) {
+                    setError(e);
+                } else {
+                    setError(new Error(e?.message ?? "Unknown error"));
+                }
             } finally {
                 setIsLoading(false);
             }
